@@ -75,10 +75,10 @@
                 socket.emit('send tank', tank, user);
                 
             }
+            //-------------------------------------------------------------------------------------------------//
             socket.on('return data', function(newtanks, userList) {
                 tanks = newtanks;
-            });
-            //-------------------------------------------------------------------------------------------------//
+            });//updates local socket data
             socket.on('new player', function() {
                 socket.emit('append tank', {
                         xpos:15,

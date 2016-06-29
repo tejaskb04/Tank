@@ -8,7 +8,7 @@ app.get('/', function(req, res) {
 });
 
 io.on('connect', function(socket) {
-    socket.on('isValidUser', function(user) {
+    socket.on('isValidUser', function(user) { //validates and appends user
         var isValid = true;
          for(i = 0; i < user.length; i++) {
              if(userList[i] == user) {
@@ -20,10 +20,10 @@ io.on('connect', function(socket) {
         }
         else {
             socket.emit('requestUser');
+            socket.emit('new player');//only produces player once username validated
         }
     });
-    socket.emit('new player');
-    socket.on('send tank', function(tank, user) {
+    socket.on('send tank', function(tank, user) {//for rendering purposes
         var userindex = userList.indexOf(user);
         if(userindex>-1){
             tanks[userindex].xpos = tank.xpos;
