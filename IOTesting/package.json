@@ -1,0 +1,26 @@
+{
+  "name": "tank",
+  "version": "1.0.0",
+  "description": "A tank game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tejaskb04/Tank.git"
+  },
+  "keywords": [
+    "tank"
+  ],
+  "author": "Saransh Kacharia, Tejas Bharadwaj, Arvind Saripalli, Aditya Murali",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tejaskb04/Tank/issues"
+  },
+  "homepage": "https://github.com/tejaskb04/Tank#readme",
+  "dependencies" : {
+    "socket.io" : "1.4.8",
+    "express" : "4.14.0"
+  }
+}
