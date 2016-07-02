@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+    <body>
+        <canvas id = "myCanvas" position = "absolute" width = "500" height = "500" style = "border: 1px solid #D3D3D3"></canvas>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io();
+            var canvas = document.getElementById("myCanvas");
+            
+            var prevAngle = 0;
+            var angleOffset = 0;
+            
+            var shots = []; //these are the IDs
+            var bullets = [];
+            var bulletIDs = [];
+            var tanks = [];
+            var numBullets = 5;
+            var userTank;
+            var drawer;
+            var renderID;
+            var updateID;
+            var bulletUpdateID; var bulletTimeSet = false;
+            var myTankID;
+            socket.on('connected', function(){
+                userTank = new Tank((canvas.width-19)/2,(canvas.height-12)/2,0);
+                tanks.push(userTank);
+                socket.emit('append tank', userTank);
+            });
+            
+            socket.on('tankID', function(TankID) {
+                myTankID = TankID;
+                window.addEventListener("mousemove", rotate);
+                window.addEventListener("click", shoot);
+                window.addEventListener("keydown", move);
+                window.addEventListener("keyup", stopMove);
+                renderID = setInterval(render,5);
+                updateID = setInterval(sendTankInfo, 5);
+                drawer = canvas.getContext("2d");
+            });
+            socket.on('bulletID', function(bulletID){
+                bulletIDs.push(bulletID);
+                if(!bulletTimeSet){
+                    bulletUpdateID = setInterval(sendBulletInfo, 5);
+                    bulletTimeSet = true;
+                }
+                console.log(bulletIDs);
+                console.log(shots);
+            });
+            socket.on('globalTankUpdate', function(globaltanks) {
+                if(globaltanks.length > 0) {
+                    globaltanks.splice(myTankID, 1);
+                    tanks = globaltanks;
+                    tanks.push(userTank);
+                }
+            });
+            socket.on('globalBulletUpdate', function(globalbullets) {
+                if(globalbullets.length > 0) {
+                    shots = globalbullets;
+                }
+            });
+            function sendTankInfo(){
+                socket.emit('sendLocalTank', userTank, myTankID);
+            }
+            function sendBulletInfo(){
+                socket.emit('sendBullets', shots, bulletIDs);
+            }
+            function Tank(x, y, direction){
+                this.x = x;
+                this.y = y;
+                this.width = 19;
+                this.height = 12;
+                this.xvel = 0;
+                this.yvel = 0;
+                this.direction = direction;
+            }
+            function Ball(x, y, shotangle) {
+                this.x = x;
+                this.y = y;
+                this.width = 2;
+                this.height = 2;
+                this.xvel = 0;
+                this.yvel = 0;
+                this.shotangle = shotangle;
+            }
+            function drawBall(renderBall){
+                drawer.fillStyle = "#000000";
+                drawer.strokeStyle = "#000000";
+                drawer.beginPath();
+                drawer.arc(renderBall.x, renderBall.y, 4, 0, 2 * Math.PI, true);
+                drawer.stroke();
+            }
+            
+            function drawTank(renderTank){
+                drawer.fillStyle = "#FF0000";
+                drawer.moveTo(renderTank.x, renderTank.y);
+                drawer.lineTo(renderTank.x + 15, renderTank.y);
+                drawer.lineTo(renderTank.x + 15, renderTank.y + 5);
+                drawer.lineTo(renderTank.x + 19, renderTank.y + 5);
+                drawer.lineTo(renderTank.x + 19, renderTank.y + 7);
+                drawer.lineTo(renderTank.x + 15, renderTank.y + 7);
+                drawer.lineTo(renderTank.x + 15, renderTank.y + 12);
+                drawer.lineTo(renderTank.x, renderTank.y + 12 );
+                drawer.closePath();
+                drawer.fill();
+            }
+
+            function updateTankPositions(){
+                for(var i = 0;i<tanks.length;i++){
+                    tanks[i].x += tanks[i].yvel*Math.cos(tanks[i].direction);
+                    tanks[i].y += tanks[i].yvel*Math.sin(tanks[i].direction);
+                }
+            }
+            function render()
+            {
+                drawer.clearRect(-canvas.width*2, -canvas.height*2, canvas.width*4, canvas.height*4);
+                updateTankPositions();
+                for(var i = 0;i<tanks.length;i++){
+                    drawer.save();
+                    drawer.translate(tanks[i].x + tanks[i].width / 2, tanks[i].y + tanks[i].height / 2);
+                    drawer.rotate(tanks[i].direction);
+                    drawer.translate(-1*(tanks[i].x + tanks[i].width / 2), -1*(tanks[i].y + tanks[i].height / 2));
+                    drawTank(tanks[i])
+                    drawer.restore();
+                }
+                drawer.save();
+                drawer.translate(canvas.width/2, canvas.height/2);
+                for(var i = 0; i < shots.length; i++) {
+                    shots[i].x += shots[i].xvel;
+                    shots[i].y += shots[i].yvel;
+                    drawBall(shots[i]);                  
+                    if(shots[i].y > canvas.height / 2 ||shots[i].y <-canvas.height / 2) {
+                        shots[i].yvel = -shots[i].yvel;
+                    }
+                    if(shots[i].x > canvas.width /2 || shots[i].x < -canvas.width / 2){
+                        shots[i].xvel = -shots[i].xvel;
+                    }
+                }
+                drawer.restore();
+            }
+            function rotate(e) {
+                var xMousePos = e.clientX - userTank.x;
+                var yMousePos = e.clientY - userTank.y;
+                angleReq = Math.atan2(yMousePos, xMousePos);
+                userTank.direction += (angleReq - prevAngle);
+                prevAngle = angleReq;
+                
+            }
+            
+            function shoot(e) {
+                if(numBullets > 0){
+                    var ball = new Ball(userTank.x-(canvas.width-userTank.width)/2, userTank.y-(canvas.height-userTank.height)/2, userTank.direction);
+                    ball.xvel = Math.cos(userTank.direction);
+                    ball.yvel = Math.sin(userTank.direction);
+                    shots.push(ball);
+                    socket.emit('appendBullet', ball);   
+                    numBullets--; 
+                }
+            }
+
+            function move(e) {
+                if (e.keyCode == 87) {
+                    userTank.yvel = 0.5;
+                }
+                if (e.keyCode == 83) {
+                    userTank.yvel = -0.3;
+                }
+            }
+            function stopMove(e) {
+                if (e.keyCode == 87) {
+                    userTank.yvel = 0;
+                }
+                if (e.keyCode == 83) {
+                    userTank.yvel = 0;
+                }
+            }
+        </script>
+    </body>
+</html>
