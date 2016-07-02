@@ -50,7 +50,7 @@
                 this.xvel = 0;
                 this.yvel = 0;
                 this.shotangle = shotangle;
-            }
+            };
             Ball.prototype.draw = function() {
                 drawer.fillStyle = "#000000";
                 drawer.strokeStyle = "#000000";
@@ -71,7 +71,7 @@
                 drawer.closePath();
                 drawer.fill();
                 
-            }
+            };
 
             function updateTankPositions(){
                 for(var i = 0;i<tanks.length;i++){
@@ -83,14 +83,18 @@
             {
                 drawer.clearRect(-canvas.width*2, -canvas.height*2, canvas.width*4, canvas.height*4);
                 updateTankPositions();
-                for(var i = 0;i<tanks.length;i++){
+                //for(var i = 0;i<tanks.length;i++){
                     drawer.save();
-                    drawer.translate(tanks[i].x + tanks[i].width / 2, tanks[i].y + tanks[i].height / 2);
-                    drawer.rotate(tanks[i].direction);
-                    drawer.translate(-1*(tanks[i].x + tanks[i].width / 2), -1*(tanks[i].y + tanks[i].height / 2));
-                    tanks[i].draw();
+                    
+                    drawer.translate(userTank.x + userTank.width / 2, userTank.y + userTank.height / 2);
+                    //drawer.translate(tanks[i].x + tanks[i].width / 2, tanks[i].y + tanks[i].height / 2);
+                    drawer.rotate(userTank.direction);
+                    drawer.translate(-1*(userTank.x + userTank.width / 2), -1*(userTank.y + userTank.height / 2));
+                    //drawer.translate(-1*(tanks[i].x + tanks[i].width / 2), -1*(tanks[i].y + tanks[i].height / 2));
+                    userTank.draw();
+                    //tanks[i].draw();
                     drawer.restore();
-                }
+                //}
                 drawer.save();
                 drawer.translate(canvas.width/2, canvas.height/2);
                 for(var i = 0; i < shots.length; i++) {

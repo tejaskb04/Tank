@@ -5,26 +5,27 @@ var tanks = [];
 var updateID;
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + "/MultiTank.html");
+    res.sendFile(__dirname + "/derpy tank.html");
 });
 
 io.on('connect', function(socket) {
     socket.emit('connected');
-    updateID = setInterval(sendTank, 5);
     socket.on('append tank', function(tank) {
         tanks.push(tank);
-        console.log(tanks);
+        console.log("Added");
+        console.log(tank);
         socket.emit('tankID', tanks.length - 1);
+        updateID = setInterval(sendTank, 5);
     });
-    socket.on('sendTank', function(userTank, userTankID) {
+    socket.on('sendLocalTank', function(userTank, userTankID) {
     	tanks[userTankID] = userTank;
     });
 });
 
 http.listen(8080, function() {
-    console.log("Connecting to port 8000..."); 
+    console.log("Connecting to port 8080...");
 });
 
 function sendTank(){
 	io.emit('globalTankUpdate', tanks);
-};
+}

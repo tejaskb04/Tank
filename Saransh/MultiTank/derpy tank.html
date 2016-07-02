@@ -28,29 +28,27 @@
                 userTank = new Tank((canvas.width-19)/2,(canvas.height-12)/2,0);
                 tanks.push(userTank);
                 socket.emit('append tank', userTank);
-                
             });
-            socket.on('tankID', function(myTankID) {
-                this.myTankID = myTankID;
+            
+            socket.on('tankID', function(TankID) {
+                myTankID = TankID;
                 window.addEventListener("mousemove", rotate);
                 window.addEventListener("click", shoot);
                 window.addEventListener("keydown", move);
                 window.addEventListener("keyup", stopMove);
                 renderID = setInterval(render,5);
-                updateID = setInterval(sendTank, 5);
+                updateID = setInterval(sendTankInfo, 5);
                 drawer = canvas.getContext("2d");
             });
-            socket.on('globalTankUpdate', function(tanks) {
-                /*if(tanks.length != 0) {
-                    this.tanks.splice(this.tanks.length - 1, 1);
+            socket.on('globalTankUpdate', function(globaltanks) {
+                if(globaltanks.length > 0) {
+                    globaltanks.splice(myTankID, 1);
+                    tanks = globaltanks;
+                    tanks.push(userTank);
                 }
-                
-                tanks.splice(myTankID, 1);
-                this.tanks = tanks;
-                this.tanks.push();*/
             });
-            function sendTank(){
-                socket.emit('sendTank', userTank, myTankID);
+            function sendTankInfo(){
+                socket.emit('sendLocalTank', userTank, myTankID);
             }
             function Tank(x, y, direction){
                 this.x = x;
@@ -70,26 +68,26 @@
                 this.yvel = 0;
                 this.shotangle = shotangle;
             }
-            Ball.prototype.draw = function() {
+            function drawBall(renderBall){
                 drawer.fillStyle = "#000000";
                 drawer.strokeStyle = "#000000";
                 drawer.beginPath();
-                drawer.arc(this.x, this.y, 4, 0, 2 * Math.PI, true);
+                drawer.arc(renderBall.x, renderBall.y, 4, 0, 2 * Math.PI, true);
                 drawer.stroke();
-            };
-            Tank.prototype.draw = function() {
+            }
+            
+            function drawTank(renderTank){
                 drawer.fillStyle = "#FF0000";
-                drawer.moveTo(this.x, this.y);
-                drawer.lineTo(this.x + 15, this.y);
-                drawer.lineTo(this.x + 15, this.y + 5);
-                drawer.lineTo(this.x + 19, this.y + 5);
-                drawer.lineTo(this.x + 19, this.y + 7);
-                drawer.lineTo(this.x + 15, this.y + 7);
-                drawer.lineTo(this.x + 15, this.y + 12);
-                drawer.lineTo(this.x, this.y + 12 );
+                drawer.moveTo(renderTank.x, renderTank.y);
+                drawer.lineTo(renderTank.x + 15, renderTank.y);
+                drawer.lineTo(renderTank.x + 15, renderTank.y + 5);
+                drawer.lineTo(renderTank.x + 19, renderTank.y + 5);
+                drawer.lineTo(renderTank.x + 19, renderTank.y + 7);
+                drawer.lineTo(renderTank.x + 15, renderTank.y + 7);
+                drawer.lineTo(renderTank.x + 15, renderTank.y + 12);
+                drawer.lineTo(renderTank.x, renderTank.y + 12 );
                 drawer.closePath();
                 drawer.fill();
-                
             }
 
             function updateTankPositions(){
@@ -107,7 +105,7 @@
                     drawer.translate(tanks[i].x + tanks[i].width / 2, tanks[i].y + tanks[i].height / 2);
                     drawer.rotate(tanks[i].direction);
                     drawer.translate(-1*(tanks[i].x + tanks[i].width / 2), -1*(tanks[i].y + tanks[i].height / 2));
-                    tanks[i].draw();
+                    drawTank(tanks[i])
                     drawer.restore();
                 }
                 drawer.save();
@@ -115,7 +113,7 @@
                 for(var i = 0; i < shots.length; i++) {
                     shots[i].x += shots[i].xvel;
                     shots[i].y += shots[i].yvel;
-                    shots[i].draw();                  
+                    drawBall(shots[i]);                  
                     if(shots[i].y > canvas.height / 2 ||shots[i].y <-canvas.height / 2) {
                         shots[i].yvel = -shots[i].yvel;
                     }
@@ -139,7 +137,7 @@
                 ball.xvel = Math.cos(userTank.direction);
                 ball.yvel = Math.sin(userTank.direction);
                 shots.push(ball);
-                //socket.emit('sendBullet', ball); 
+                socket.emit('sendBullet', ball); 
             }
 
             function move(e) {
