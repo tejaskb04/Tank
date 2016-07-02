@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id = "myCanvas" width = "500" height = "500" style = "border: 1px solid #D3D3D3"></canvas>
+        <script>
+            var canvas = document.getElementById("myCanvas");
+            var drawer = canvas.getContext("2d");
+            drawer.fillStyle = "#BD559C";
+            var xvel = Math.random() * 2 + 1;
+            var yvel = Math.random() * 2 + 1;
+            var xvel1 = Math.random() * 2 + 1;
+            var yvel1 = Math.random() * 2 + 1;
+            var xpos = 100;
+            var ypos = 100;
+            var xpos1 = 300;
+            var ypos1 = 300;
+            var w = 100;
+            var h = 100;
+            var renderID = setInterval(render, 5);
+            function move() {
+                xpos += xvel;
+                ypos += yvel;
+                xpos1 += xvel1;
+                ypos1 += yvel1;
+            }
+            
+            function render() {
+                move();
+                ifTouching();
+                drawer.clearRect(0, 0, canvas.width, canvas.height);
+                drawer.fillRect(xpos, ypos, w, h)
+                drawer.fillRect(xpos1, ypos1, w, h);
+            }
+            
+            function ifTouching() {
+                if (xpos >= canvas.width - w || xpos <= 0) {
+                    xvel = -xvel;
+                }
+                
+                if (ypos >= canvas.height - h || ypos <= 0) {
+                    yvel = -yvel;
+                }
+                if (xpos1 >= canvas.width - w || xpos1 <= 0) {
+                    xvel1 = -xvel1;
+                }
+                
+                if (ypos1 >= canvas.height - h || ypos1 <= 0) {
+                    yvel1 = -yvel1;
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body{
+            overflow: hidden;
+        }
+        #container{
+            width: inherit;
+            height: inherit;
+            position: relative;
+        }
+        .ball{
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+            position: absolute;
+            top:100px;
+            left:0px;
+        }
+        #floor{
+            width:825px;
+            height: 10px;
+            position: absolute;
+            background-color: black;
+            top:300px;
+            left:0px;
+            border-radius: 10px;
+        }
+    </style>
+    <body>
+        <h1> Ballz Bouncing!!!</h1>
+        <button id="btn" onclick="moveIt()">Drop</button>
+        <input id="gravity" type="range" min="250" max="350" />
+        <div id="container">
+            <div id ="floor"></div>
+        </div>
+        <script>
+            function randomColor(){
+                var red = Math.round(Math.random() * 255);
+                var green = Math.round(Math.random() * 255);
+                var blue = Math.round(Math.random() * 255);
+                
+                var hexred = red.toString(16);
+                var hexgreen = green.toString(16);
+                var hexblue = blue.toString(16);
+                return '#'+hexred+hexgreen+hexblue;
+            }
+            function moveIt(){
+                var elems = document.createElement("div");
+                document.getElementById("container").appendChild(elems);
+                elems.setAttribute('class', 'ball');
+                
+                elems.style.backgroundColor = "rgb("+
+                    Math.round(Math.random() * 255)+","+
+                    Math.round(Math.random() * 255)+","+
+                    Math.round(Math.random() * 255)+")";
+                
+                var pos = 100;
+                var lpos = 0;
+                var vel = 0;
+                var id = setInterval(frame, 5);
+                
+                var vol = 1;
+                var audio = new Audio('Tick-DeepFrozenApps-397275646.mp3');
+                
+                function frame(){
+                    if(pos>=500){
+                        document.getElementById("container").removeChild(elems);
+                        elems.removeAttribute('class', 'ball');
+                        clearInterval(id);
+                        return;
+                    }
+                    lpos++;
+                    elems.style.left = lpos + 'px';
+                    if(pos>=250&&lpos<810){
+                        audio.volume = vol;
+                        audio.pause();
+                        audio.currentTime = 0;
+                        if(vel!=0){
+                            audio.play();
+                        }
+                        if(Math.abs(vel)<5){
+                            vel = 0;    
+                            vol = 0;
+                            pos = 250;
+                        }
+                        else{
+                            vel = -vel;
+                            vel = vel/(document.getElementById("gravity").value/250);
+                            pos = 250
+                            if(Math.abs(vel)>60){
+                                vol = 1;
+                            }
+                            else{
+                                vol = Math.abs(vel)/60;
+                            }
+                        }
+                    }
+                    else{
+                        vel++;
+                    }
+                    pos+=vel/10;
+                    elems.style.top = pos + 'px';
+                }
+            }
+        </script>
+    </body>
+</html>

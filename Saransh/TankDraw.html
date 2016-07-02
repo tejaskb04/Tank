@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id = "myCanvas" width = "500" height = "500" style = "border: 1px solid #D3D3D3"></canvas>
+        <script>
+            var canvas = document.getElementById("myCanvas");
+            var drawer = canvas.getContext("2d");
+            drawer.fillStyle = "#BD559C";
+            drawTank();
+            //var id = setInterval(5,move)
+            move();
+            function move() {
+                drawer.rotate(50*Math.PI/180);
+                drawTank();
+            }
+            
+            function drawTank(){
+                drawer.clearRect(0,0,canvas.width,canvas.height);
+                drawer.save();
+                drawer.beginPath();
+                drawer.moveTo(47,50)
+                drawer.lineTo(62,50);
+                drawer.lineTo(62,55);
+                drawer.lineTo(66,55);
+                drawer.lineTo(66,57);
+                drawer.lineTo(62,57);
+                drawer.lineTo(62,62);
+                drawer.lineTo(47,62);
+                drawer.closePath();
+                drawer.fill();
+                drawer.fillRect(300,300,50,70);
+                drawer.restore();
+            }
+            
+            function render() {
+            }
+        </script>
+    </body>
+</html>

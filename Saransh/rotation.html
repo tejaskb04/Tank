@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id = "myCanvas" position = "absolute" width = "500" height = "500" style = "border: 1px solid #D3D3D3"></canvas>
+        <script>
+            var canvas = document.getElementById("myCanvas");
+            document.addEventListener("mousemove", rotate);
+            
+            var xpos = canvas.width / 2 - 40;
+            var ypos = canvas.height / 2 - 20;
+            var w = 80;
+            var h = 40;
+            var angle = 0;
+            var prevAngle = 0;
+            var rotationVar = 0;
+            
+            var drawer = canvas.getContext("2d");
+            drawer.fillStyle = "#FF0000";
+            drawer.fillRect(xpos, ypos, w, h);
+            /*drawer.beginPath(); ***** Tank Code *****
+            drawer.moveTo(47,50)
+            drawer.lineTo(62,50);
+            drawer.lineTo(62,55);
+            drawer.lineTo(66,55);
+            drawer.lineTo(66,57);
+            drawer.lineTo(62,57);
+            drawer.lineTo(62,62);
+            drawer.lineTo(47,62);
+            drawer.closePath();
+            drawer.fill();*/
+            function getAngle(e) {
+                var xMousePos = e.clientX;
+                var yMousePos = e.clientY;
+                var newAngle = xMousePos;
+                rotationVar = newAangle - prevAngle;
+                prevAngle = newAngle;
+            }
+            function rotate(e) {
+                getAngle(e);
+                drawer.clearRect(0, 0, canvas.width, canvas.height);
+                drawer.translate(xpos + w / 2, ypos + h / 2);
+                drawer.rotate(rotationVar*Math.PI/180);
+                drawer.translate(-1 * (xpos + w / 2), -1 * (ypos + h / 2));
+                drawer.fillRect(xpos, ypos, w, h);
+            }
+        </script>
+    </body>
+</html>

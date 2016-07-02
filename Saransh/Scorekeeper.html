@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        input{
+            margin-left: 100px;
+        }
+    </style>
+    <body>
+        
+        <button id = "updateButton" onclick="updateScore()">Update Score</button>
+        
+        <hr>
+        <font color="red"; Size="16" >Team A </font> 
+        
+        <hr>
+
+        <label id = "Vraj">Vraj ------</label>
+        <input id = "VrajText" type="text">
+        <button id = "VrajCallVaishnave" onclick="VrajVaish()">Vaishnave</button>
+        <button id = "VrajCallExpert" onclick="VrajExp()">Expert</button>
+        
+        <hr>
+        
+        <label id = "Vrundavan">Vrundavan</label>
+        <input id = "VrundavanText" type="text">
+        <button id = "VrundavanCallVaishnave" onclick="VrundavanVaish()">Vaishnave</button>
+        <button id = "VrundavanCallExpert" onclick="VrundavanExp()">Expert</button>
+        
+        <hr>
+        
+        <label id = "Kung">Kung Gali</label>
+        <input id = "KungText" type="text">
+        <button id = "KungCallVaishnave" onclick="KungVaish()">Vaishnave</button>
+        <button id = "KungCallExpert" onclick="KungExp()">Expert</button>
+        
+        <hr>
+        <font color="red"; Size="16" >Team B </font>
+        <hr>
+        
+        <label id = "Nath">Nathdwara</label>
+        <input id = "NathText" type="text">
+        <button id = "NathCallVaishnave" onclick="NathVaish()">Vaishnave</button>
+        <button id = "NathCallExpert" onclick="NathExp()">Expert</button>
+        
+        <hr>
+        
+        <label id = "Giriraj">Giriraj ---</label>
+        <input id = "GirirajText" type="text">
+        <button id = "GirirajCallVaishnave" onclick="GirirajVaish()">Vaishnave</button>
+        <button id = "GirirajCallExpert" onclick="GirirajExp()">Expert</button>
+        
+        <hr>
+        
+        <label id = "Mathura">Mathura ---</label>
+        <input id = "MathuraText" type="text">
+        <button id = "MathuraCallVaishnave" onclick="MathuraVaish()">Vaishnave</button>
+        <button id = "MathuraCallExpert" onclick="MathuraExp()">Expert</button>
+        <script>
+            localStorage.clear();
+            localStorage.setItem("VrajVaish","Yes")
+            localStorage.setItem("VrundavanVaish","Yes")
+            localStorage.setItem("KungVaish","Yes")
+            localStorage.setItem("NathVaish","Yes")
+            localStorage.setItem("GirirajVaish","Yes")
+            localStorage.setItem("MathuraVaish","Yes")
+            localStorage.setItem("VrajExp","Yes")
+            localStorage.setItem("VrundavanExp","Yes")
+            localStorage.setItem("KungExp","Yes")
+            localStorage.setItem("NathExp","Yes")
+            localStorage.setItem("GirirajExp","Yes")
+            localStorage.setItem("MathuraExp","Yes")
+            
+            function updateScore(){
+                localStorage.setItem("VrajText", document.getElementById("VrajText").value);
+                localStorage.setItem("VrundavanText", document.getElementById("VrundavanText").value);
+                localStorage.setItem("KungText", document.getElementById("KungText").value);
+                localStorage.setItem("NathText", document.getElementById("NathText").value);
+                localStorage.setItem("GirirajText", document.getElementById("GirirajText").value);
+                localStorage.setItem("MathuraText", document.getElementById("MathuraText").value);
+                
+            }
+            function VrajVaish()
+            {
+                localStorage.setItem("VrajVaish","No");
+                
+            }
+            function VrajExp()
+            {
+               localStorage.setItem("VrajExp","No");
+            }
+            function VrundavanVaish()
+            {
+                localStorage.setItem("VrundavanVaish","No");
+            }
+            function VrundavanExp()
+            {
+                localStorage.setItem("VrundavanExp","No");
+            }
+            function KungVaish()
+            {
+                localStorage.setItem("KungVaish", "No");
+            }
+            function KungExp()
+            {
+                localStorage.setItem("KungExp", "No");
+            }
+            function NathVaish()
+            {
+                localStorage.setItem("NathVaish","No");
+            }
+            function NathExp()
+            {
+                localStorage.setItem("NathExp","No");
+            }
+            function GirirajVaish()
+            {
+                localStorage.setItem("GirirajVaish", "No");
+            }
+            function GirirajExp()
+            {
+                localStorage.setItem("GirirajExp", "No");
+            }
+            function MathuraVaish()
+            {
+                localStorage.setItem("MathuraVaish", "No");
+            }
+            function MathuraExp()
+            {
+                localStorage.setItem("MathuraExp", "No");
+            }
+                        
+            
+        </script>
+    </body>
+</html

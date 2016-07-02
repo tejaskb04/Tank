@@ -1,0 +1,118 @@
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+<Div>
+    <font color="red"; Size="16" >Team A </font> 
+  <table style="width:50%">
+        <tr>
+            <th>Name</th>
+            <th> Score</th>
+            <th>Vaishnave Call Avaiable</th>
+            <th>Expert Call Available</th>
+        </tr>
+        <tr>
+            <td>Vraj</td>
+            <td id = "VrajText"> None </td>
+            <td id = "VrajVaish"> Yes </td>
+            <td id = "VrajExp"> Yes </td>
+        </tr>
+        <tr>
+            <td>Vrundavan</td>
+            <td id = "VrundavanText"> None </td>
+            <td id = "VrundavanVaish"> Yes </td>
+            <td id = "VrundavanExp"> Yes </td>
+        </tr>
+        <tr>
+            <td>Kung</td>
+            <td id = "KungText"> None </td>
+            <td id = "KungVaish"> Yes </td>
+            <td id = "KungExp"> Yes </td>
+        </tr>
+ </table>
+</BR>
+</BR>
+<font color="red"; Size="16" >Team B </font> 
+<table style="width:50%">
+  <tr>
+            <th>Name</th>
+            <th> Score</th>
+            <th>Vaishnave Call Avaiable</th>
+            <th>Expert Call Available</th>
+        </tr>
+        <tr>
+            <td>Nath</td>
+            <td id = "NathText"> None </td>
+            <td id = "NathVaish"> Yes </td>
+            <td id = "NathExp"> Yes </td>
+        </tr>
+        <tr>
+            <td>Giriraj</td>
+            <td id = "GirirajText"> None </td>
+            <td id = "GirirajVaish"> Yes </td>
+            <td id = "GirirajExp"> Yes </td>
+        </tr>
+        <tr>
+            <td>Mathura</td>
+            <td id = "MathuraText"> None </td>
+            <td id = "MathuraVaish"> Yes </td>
+            <td id = "MathuraExp"> Yes </td>
+        </tr>
+</table>
+
+    <script>
+        localStorage.clear();
+        var id = setInterval(updateScores, 500);
+        
+            localStorage.setItem("VrajText","None");
+            localStorage.setItem("VrundavanText","None");
+            localStorage.setItem("KungText","None");
+            localStorage.setItem("NathText","None");
+            localStorage.setItem("GirirajText","None");
+            localStorage.setItem("MathuraText","None");
+        
+            localStorage.setItem("VrajVaish","Yes");
+            localStorage.setItem("VrundavanVaish","Yes");
+            localStorage.setItem("KungVaish","Yes");
+            localStorage.setItem("NathVaish","Yes");
+            localStorage.setItem("GirirajVaish","Yes");
+            localStorage.setItem("MathuraVaish","Yes");
+            localStorage.setItem("VrajExp","Yes");
+            localStorage.setItem("VrundavanExp","Yes");
+            localStorage.setItem("KungExp","Yes");
+            localStorage.setItem("NathExp","Yes");
+            localStorage.setItem("GirirajExp","Yes");
+            localStorage.setItem("MathuraExp","Yes");
+        function updateScores(){
+            document.getElementById("VrajText").innerHTML = localStorage.getItem("VrajText");
+            document.getElementById("VrajVaish").innerHTML = localStorage.getItem("VrajVaish");
+            document.getElementById("VrajExp").innerHTML = localStorage.getItem("VrajExp");
+            
+            document.getElementById("VrundavanText").innerHTML = localStorage.getItem("VrundavanText");
+            document.getElementById("VrundavanVaish").innerHTML = localStorage.getItem("VrundavanVaish");
+            document.getElementById("VrundavanExp").innerHTML = localStorage.getItem("VrundavanExp");
+            
+            document.getElementById("KungText").innerHTML = localStorage.getItem("KungText");
+            document.getElementById("KungVaish").innerHTML = localStorage.getItem("KungVaish");
+            document.getElementById("KungExp").innerHTML = localStorage.getItem("KungExp");
+            
+            document.getElementById("NathText").innerHTML = localStorage.getItem("NathText");
+            document.getElementById("NathVaish").innerHTML = localStorage.getItem("NathVaish");
+            document.getElementById("NathExp").innerHTML = localStorage.getItem("NathExp");
+            
+            document.getElementById("GirirajText").innerHTML = localStorage.getItem("GirirajText");
+            document.getElementById("GirirajVaish").innerHTML = localStorage.getItem("GirirajVaish");
+            document.getElementById("GirirajExp").innerHTML = localStorage.getItem("GirirajExp");
+            
+            document.getElementById("MathuraText").innerHTML = localStorage.getItem("MathuraText");
+            document.getElementById("MathuraVaish").innerHTML = localStorage.getItem("MathuraVaish");
+            document.getElementById("MathuraExp").innerHTML = localStorage.getItem("MathuraExp");
+        }
+    </script>
+    </body>
+</html>
