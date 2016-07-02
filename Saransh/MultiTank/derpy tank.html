@@ -90,16 +90,26 @@
                 drawer.fill();
             }
 
-            function updateTankPositions(){
+            function updatePositions(){
                 for(var i = 0;i<tanks.length;i++){
                     tanks[i].x += tanks[i].yvel*Math.cos(tanks[i].direction);
                     tanks[i].y += tanks[i].yvel*Math.sin(tanks[i].direction);
+                }
+                for(var i = 0; i < shots.length; i++) {
+                    shots[i].x += shots[i].xvel;
+                    shots[i].y += shots[i].yvel;       
+                    if(shots[i].y > canvas.height / 2 ||shots[i].y <-canvas.height / 2) {
+                        shots[i].yvel = -shots[i].yvel;
+                    }
+                    if(shots[i].x > canvas.width /2 || shots[i].x < -canvas.width / 2){
+                        shots[i].xvel = -shots[i].xvel;
+                    }
                 }
             }
             function render()
             {
                 drawer.clearRect(-canvas.width*2, -canvas.height*2, canvas.width*4, canvas.height*4);
-                updateTankPositions();
+                updatePositions();
                 for(var i = 0;i<tanks.length;i++){
                     drawer.save();
                     drawer.translate(tanks[i].x + tanks[i].width / 2, tanks[i].y + tanks[i].height / 2);
@@ -111,15 +121,7 @@
                 drawer.save();
                 drawer.translate(canvas.width/2, canvas.height/2);
                 for(var i = 0; i < shots.length; i++) {
-                    shots[i].x += shots[i].xvel;
-                    shots[i].y += shots[i].yvel;
-                    drawBall(shots[i]);                  
-                    if(shots[i].y > canvas.height / 2 ||shots[i].y <-canvas.height / 2) {
-                        shots[i].yvel = -shots[i].yvel;
-                    }
-                    if(shots[i].x > canvas.width /2 || shots[i].x < -canvas.width / 2){
-                        shots[i].xvel = -shots[i].xvel;
-                    }
+                    drawBall(shots[i]);
                 }
                 drawer.restore();
             }
@@ -139,10 +141,11 @@
                 shots.push(ball);
                 socket.emit('sendBullet', ball); 
             }
-            
+
             socket.on('globalBullets',function(globalShots){
                 shots = globalShots;
             });
+            
             function move(e) {
                 if (e.keyCode == 87) {
                     userTank.yvel = 0.5;
