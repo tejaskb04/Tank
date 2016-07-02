@@ -139,7 +139,10 @@
                 shots.push(ball);
                 socket.emit('sendBullet', ball); 
             }
-
+            
+            socket.on('globalBullets',function(globalShots){
+                shots = globalShots;
+            });
             function move(e) {
                 if (e.keyCode == 87) {
                     userTank.yvel = 0.5;

@@ -2,6 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var tanks = [];
+var shots = [];
 var updateID;
 
 app.get('/', function(req, res) {
@@ -20,6 +21,9 @@ io.on('connect', function(socket) {
     socket.on('sendLocalTank', function(userTank, userTankID) {
     	tanks[userTankID] = userTank;
     });
+    socket.on('sendBullet',function(ball){
+        shots.push(ball);
+    })
 });
 
 http.listen(8080, function() {
@@ -28,4 +32,16 @@ http.listen(8080, function() {
 
 function sendTank(){
 	io.emit('globalTankUpdate', tanks);
+    for(var i = 0; i < shots.length; i++) {
+        shots[i].x += shots[i].xvel;
+        shots[i].y += shots[i].yvel;         
+        if(shots[i].y > 500 / 2 ||shots[i].y <-500 / 2) {
+            shots[i].yvel = -shots[i].yvel;
+        }
+        if(shots[i].x > 500 /2 || shots[i].x < -500 / 2){
+            shots[i].xvel = -shots[i].xvel;
+        }
+    }
+    io.emit('globalBullets',shots);
 }
+
