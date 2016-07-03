@@ -18,7 +18,7 @@
             
             var shots = [];
             var tanks = [];
-            
+          	
             var userTank;
             var drawer;
             var renderID;
@@ -27,11 +27,13 @@
             socket.on('connected', function(){
                 userTank = new Tank((canvas.width-19)/2,(canvas.height-12)/2,0);
                 tanks.push(userTank);
+                socket.emit('sendMyID', socket.id);
                 socket.emit('append tank', userTank);
+
             });
             
-            socket.on('tankID', function(TankID) {
-                myTankID = TankID;
+            socket.on('startRender', function() {
+                //myTankID = TankID;
                 window.addEventListener("mousemove", rotate);
                 window.addEventListener("click", shoot);
                 window.addEventListener("keydown", move);
@@ -40,15 +42,20 @@
                 updateID = setInterval(sendTankInfo, 5);
                 drawer = canvas.getContext("2d");
             });
-            socket.on('globalTankUpdate', function(globaltanks) {
-                if(globaltanks.length > 0) {
-                    globaltanks.splice(myTankID, 1);
-                    tanks = globaltanks;
-                    tanks.push(userTank);
-                }
+            socket.on('globalTankUpdate', function(globaltanks, socketIDs) {
+            	var index;
+            	for(i = 0; i < socketIDs.length; i++) {
+            		if(socket.id == socketIDs[i]){
+            			 if(globaltanks.length > 0) {
+		                    globaltanks.splice(i, 1);
+		                    tanks = globaltanks;
+		                    tanks.push(userTank);
+		                }
+            		}
+            	}
             });
             function sendTankInfo(){
-                socket.emit('sendLocalTank', userTank, myTankID);
+                socket.emit('sendLocalTank', userTank, socket.id);
             }
             function Tank(x, y, direction){
                 this.x = x;

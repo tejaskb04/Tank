@@ -3,22 +3,31 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var tanks = [];
 var shots = [];
+var socketIDs = [];
 var updateID = setInterval(updateClient, 5);
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + "/derpy tank.html");
+    res.sendFile(__dirname + "/canvas.html");
 });
 
 io.on('connect', function(socket) {
     socket.emit('connected');
+    socket.on('sendMyID', function(id){
+        socketIDs.push(id);
+        console.log(socketIDs);
+    });
     socket.on('append tank', function(tank) {
         tanks.push(tank);
         console.log("Added");
         console.log(tank);
-        socket.emit('tankID', tanks.length - 1);
+        socket.emit('startRender');
     });
-    socket.on('sendLocalTank', function(userTank, userTankID) {
-    	tanks[userTankID] = userTank;
+    socket.on('sendLocalTank', function(userTank, userID) {
+        for(i = 0; i < socketIDs.length; i++){
+            if(userID == socketIDs[i]){
+                tanks[i] = userTank;
+            }
+        }
     });
     socket.on('sendBullet',function(ball){
         shots.push(ball);
@@ -30,7 +39,7 @@ http.listen(3141, function() {
 });
 
 function updateClient(){
-	io.emit('globalTankUpdate', tanks);
+	io.emit('globalTankUpdate', tanks, socketIDs);
     for(var i = 0; i < shots.length; i++) {
         shots[i].x += shots[i].xvel;
         shots[i].y += shots[i].yvel;
