@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id = "myCanvas" position = "absolute" width = "500" height = "500" style = "border: 1px solid #D3D3D3"></canvas>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+        	var socket = io();
+            var canvas = document.getElementById("myCanvas");
+            
+            var tanks = [];
+            var xpos = canvas.width / 2 - 19 / 2;
+            var ypos = canvas.height / 2 - 12 / 2;
+            var w = 19;
+            var h = 12;
+            var prevAngle = 0;
+            var angle = 0;
+            //var angleOffset = 0;
+            var centerXPos = canvas.width / 2;
+            var centerYPos = canvas.height / 2;
+            var shots = [];
+            var moveXVel = 0;
+            var moveYVel = 0;
+            var drawer = canvas.getContext("2d");
+            var userTank;
+            var renderID;
+            var updateID;
+
+            socket.on('connected', function(){
+            	userTank = new Tank(xpos, ypos, 0, randomColor());
+            	tanks.push(userTank);
+            	//userTank.draw(); //sketchy
+            	socket.emit('sendMyID', socket.id);
+            	socket.emit('appendTank', userTank);
+            });
+
+            socket.on('startRender', function() {
+            	//drawer = canvas.getContext("2d");
+	            drawer.fillStyle = "#FF0000";
+	            
+            	window.addEventListener("mousemove", rotate);
+	            window.addEventListener("click", shoot);
+	            window.addEventListener("keydown", move);
+	            window.addEventListener("keyup", stopMove);
+	            renderID = setInterval(render,5);
+                updateID = setInterval(sendTankInfo, 5);
+	            
+            });
+            
+            socket.on('globalTankUpdate', function(globalTanks, socketIDs) {
+            	var index;
+            	for(i = 0; i < socketIDs.length; i++) {
+            		if(socket.id == socketIDs[i]){
+            			 if(globalTanks.length > 0) {
+		                    globalTanks.splice(i, 1);
+		                    tanks = globalTanks;
+		                    tanks.push(userTank);
+		                }
+            		}
+            	}
+            });
+            function sendTankInfo(){
+                socket.emit('sendLocalTank', userTank, socket.id);
+            }
+
+            function Tank(x, y, direction, color) {
+            	this.x = x;
+            	this.y = y;
+            	this.w = 19;
+            	this.h = 12;
+            	this.xvel = 0;
+            	this.yvel = 0;
+            	this.direction = direction;
+            	this.color = color;
+            }
+            Tank.prototype.draw = function() {
+                drawer.beginPath();
+                drawer.fillStyle = this.color;
+                drawer.moveTo(this.x, this.y);
+                drawer.lineTo(this.x + 15, this.y);
+                drawer.lineTo(this.x + 15, this.y + 5);
+                drawer.lineTo(this.x + 19, this.y + 5);
+                drawer.lineTo(this.x + 19, this.y + 7);
+                drawer.lineTo(this.x + 15, this.y+ 7);
+                drawer.lineTo(this.x + 15, this.y+ 12);
+                drawer.lineTo(this.x, this.y + 12);
+                drawer.closePath();
+                drawer.fill();
+            };
+            
+            function render()
+            {
+	            for (var i = 0; i < tanks.length; i++) {
+	            	console.log(tanks);
+	            	tanks[i].draw();
+	            }
+            	for (var i = 0; i < tanks.length; i++) {
+	                tanks[i].x += tanks[i].yvel*Math.cos(angle);
+	                tanks[i].y += tanks[i].yvel*Math.sin(angle);
+	                drawer.clearRect(-canvas.width, -canvas.height, canvas.width*2, canvas.height*2);
+	                drawer.save();
+	                drawer.translate(tanks[i].x + tanks[i].w / 2, tanks[i].y + tanks[i].h / 2);
+	                drawer.rotate(tanks[i].direction);
+	                drawer.translate(-1 * (tanks[i].x + tanks[i].w / 2), -1 * (tanks[i].y + tanks[i].h / 2));
+	                tanks[i].draw();
+	                drawer.restore();
+	                drawer.save();
+	                drawer.translate(canvas.width/2, canvas.height/2);
+            	}
+                for(var i = 0; i < shots.length; i++) {
+                    shots[i].x += shots[i].xvel;
+                    shots[i].y += shots[i].yvel;
+                    shots[i].draw();                    
+                    if(shots[i].y > canvas.height / 2 ||shots[i].y <-canvas.height / 2) {
+                        shots[i].yvel = -shots[i].yvel;
+                    }
+                    if(shots[i].x > canvas.width /2 || shots[i].x < -canvas.width / 2){
+                        shots[i].xvel = -shots[i].xvel;
+                    }
+                }
+                drawer.restore();
+            }
+            function randomColor() {
+                var red = Math.round(Math.random() * 255);
+                var green = Math.round(Math.random() * 255);
+                var blue = Math.round(Math.random() * 255);
+                
+                var hexred = red.toString(16);
+                var hexgreen = green.toString(16);
+                var hexblue = blue.toString(16);
+                return '#'+hexred+hexgreen+hexblue;
+            }
+            function rotate(e) {
+                var xMousePos = e.clientX - userTank.x;
+                var yMousePos = e.clientY - userTank.y;
+                angle = Math.atan2(yMousePos, xMousePos);
+                userTank.direction += (angle - prevAngle);                
+                prevAngle = angle;
+                
+            }
+            
+            function Ball(x, y, shotangle) {
+                this.xvel = 0;
+                this.yvel = 0;
+                this.x = x;
+                this.y = y;
+                this.shotangle = shotangle;
+            }
+            Ball.prototype.draw = function() {
+                drawer.beginPath();
+                drawer.strokeStyle = userTank.color;
+                drawer.arc(this.x, this.y, 2, 0, 2 * Math.PI, true);
+                //console.log(this.x);
+                drawer.stroke();
+            };
+            function shoot(e) {
+                var ball = new Ball(userTank.x-(canvas.width-w)/2, userTank.y-(canvas.height-h)/2, angle);
+                ball.xvel = Math.cos(angle);
+                ball.yvel = Math.sin(angle);
+                shots.push(ball);
+                //console.log(ball);
+            }
+
+            function move(e) {
+                if (e.keyCode == 87) {
+                    userTank.yvel = 0.5;
+                }
+                if (e.keyCode == 83) {
+                    userTank.yvel = -0.3;
+                }
+            }
+            function stopMove(e) {
+                if (e.keyCode == 87) {
+                    userTank.yvel = 0;
+                }
+                if (e.keyCode == 83) {
+                    userTank.yvel = 0;
+                }
+            }
+        </script>
+    </body>
+</html>
