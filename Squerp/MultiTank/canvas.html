@@ -10,15 +10,19 @@
         <canvas id = "myCanvas" position = "absolute" width = "500" height = "500" style = "border: 1px solid #D3D3D3"></canvas>
         <script src="/socket.io/socket.io.js"></script>
         <script>
+        /*
+            Bugs:
+            - Double speed for either?
+            - disconnect
+        */
             var socket = io();
             var canvas = document.getElementById("myCanvas");
             
             var prevAngle = 0;
             var angleOffset = 0;
-            
+            var allColor = randomColor();
             var shots = [];
             var tanks = [];
-          	
             var userTank;
             var drawer;
             var renderID;
@@ -54,6 +58,7 @@
             		}
             	}
             });
+            
             function sendTankInfo(){
                 socket.emit('sendLocalTank', userTank, socket.id);
             }
@@ -65,6 +70,7 @@
                 this.xvel = 0;
                 this.yvel = 0;
                 this.direction = direction;
+                this.colorID = allColor;
             }
             function Ball(x, y, shotangle) {
                 this.x = x;
@@ -74,10 +80,11 @@
                 this.xvel = 0;
                 this.yvel = 0;
                 this.shotangle = shotangle;
+                this.colorID = allColor;
             }
             function drawBall(renderBall){
-                drawer.fillStyle = "#000000";
-                drawer.strokeStyle = "#000000";
+                drawer.fillStyle = renderBall.colorID;
+                drawer.strokeStyle = renderBall.colorID;
                 drawer.beginPath();
                 drawer.arc(renderBall.x, renderBall.y, 4, 0, 2 * Math.PI, true);
                 drawer.stroke();
@@ -85,7 +92,7 @@
             
             function drawTank(renderTank){
                 drawer.beginPath();
-                drawer.fillStyle = "#FF0000";
+                drawer.fillStyle = renderTank.colorID;
                 drawer.moveTo(renderTank.x, renderTank.y);
                 drawer.lineTo(renderTank.x + 15, renderTank.y);
                 drawer.lineTo(renderTank.x + 15, renderTank.y + 5);
@@ -133,6 +140,16 @@
                 }
                 drawer.restore();
             }
+            function randomColor() {
+                var red = Math.round(Math.random() * 255);
+                var green = Math.round(Math.random() * 255);
+                var blue = Math.round(Math.random() * 255);
+                
+                var hexred = red.toString(16);
+                var hexgreen = green.toString(16);
+                var hexblue = blue.toString(16);
+                return '#'+hexred+hexgreen+hexblue;
+            }
             function rotate(e) {
                 var xMousePos = e.clientX - userTank.x;
                 var yMousePos = e.clientY - userTank.y;
@@ -143,11 +160,14 @@
             }
             
             function shoot(e) {
-                var ball = new Ball(userTank.x-(canvas.width-userTank.width)/2, userTank.y-(canvas.height-userTank.height)/2, userTank.direction);
-                ball.xvel = Math.cos(userTank.direction);
-                ball.yvel = Math.sin(userTank.direction);
-                shots.push(ball);
-                socket.emit('sendBullet', ball); 
+                //if(numBullets > 0){
+                    var ball = new Ball(userTank.x-(canvas.width-userTank.width)/2, userTank.y-(canvas.height-userTank.height)/2, userTank.direction);
+                    ball.xvel = Math.cos(userTank.direction);
+                    ball.yvel = Math.sin(userTank.direction);
+                    shots.push(ball);
+                    socket.emit('sendBullet', ball); 
+                    //numBullets--;
+                //}
             }
 
             socket.on('globalBullets',function(globalShots){

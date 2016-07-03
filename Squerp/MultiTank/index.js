@@ -31,7 +31,16 @@ io.on('connect', function(socket) {
     });
     socket.on('sendBullet',function(ball){
         shots.push(ball);
-    })
+    });
+    socket.on('disconnect', function() {
+        for(i = 0; i < socketIDs.length; i++){
+            if(socket.id.substring(2, socket.id.length) == socketIDs[i]) {
+                console.log(socket.id);
+                socketIDs.splice(i, 1);
+                tanks.splice(i, 1);
+            }
+        }
+    });
 });
 
 http.listen(3141, function() {
