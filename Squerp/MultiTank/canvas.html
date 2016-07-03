@@ -84,6 +84,7 @@
             }
             
             function drawTank(renderTank){
+                drawer.beginPath();
                 drawer.fillStyle = "#FF0000";
                 drawer.moveTo(renderTank.x, renderTank.y);
                 drawer.lineTo(renderTank.x + 15, renderTank.y);
